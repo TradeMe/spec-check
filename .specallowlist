@@ -18,6 +18,7 @@ test-project/pyproject.toml
 pyproject.toml
 uv.lock
 .specallowlist
+.specignore
 
 # DSL type definitions
 .spec-types/**/*.yaml

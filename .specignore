@@ -1,0 +1,20 @@
+# Example specification documents used to demonstrate schema capabilities
+# These are not production specs and don't require test coverage
+
+# Vision examples
+specs/vision/VIS-001.md
+
+# Job examples
+specs/jobs/JOB-004.md
+
+# Requirement examples
+specs/requirements/REQ-006.md
+
+# Solution Architecture examples
+specs/architecture/solutions/SOL-001.md
+
+# Implementation Design examples
+specs/design/IMP-001.md
+
+# Technical notes (analysis and design documents)
+specs/notes/TN-001.md

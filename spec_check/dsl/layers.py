@@ -164,6 +164,290 @@ class RequirementModule(SpecModule):
 
 
 # ============================================================================
+# Vision Layer
+# ============================================================================
+
+
+class VisionModule(SpecModule):
+    """
+    Vision Document.
+
+    Vision documents articulate the long-term goals, strategic direction,
+    and desired future state of a product or system. They provide context
+    for all lower-level specifications and help align stakeholders.
+
+    Example filename: VIS-001.md
+    Location: specs/vision/
+
+    Required sections:
+    - Vision Statement: Clear articulation of the desired future state
+    - Problem Statement: What problem are we solving and for whom?
+    - Goals: Measurable objectives that define success
+    - Stakeholders: Who are the key stakeholders and their concerns?
+    """
+
+    name: str = "Vision"
+    version: str = "1.0"
+    description: str = "Vision and strategic direction document"
+
+    file_pattern: str = r"^VIS-\d{3}\.md$"
+    location_pattern: str = r"specs/vision/"
+
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"VIS-\d{3}",
+        location="title",
+        scope="global",
+    )
+
+    sections: list[SectionSpec] = [
+        SectionSpec(heading="Vision Statement", heading_level=2, required=True),
+        SectionSpec(heading="Problem Statement", heading_level=2, required=True),
+        SectionSpec(heading="Goals", heading_level=2, required=True),
+        SectionSpec(heading="Stakeholders", heading_level=2, required=True),
+        SectionSpec(heading="Success Criteria", heading_level=2, required=False),
+        SectionSpec(heading="Constraints", heading_level=2, required=False),
+        SectionSpec(heading="Out of Scope", heading_level=2, required=False),
+    ]
+
+    references: list[Reference] = []
+
+
+# ============================================================================
+# Solution Architecture Layer
+# ============================================================================
+
+
+class ComponentSpec(SpecClass):
+    """
+    A component specification within a solution architecture.
+
+    Example:
+        ### COMP-01: User Authentication Service
+        Handles user login, registration, and session management.
+    """
+
+    heading_pattern: str = r"^COMP-\d{2}:"
+    heading_level: int = 3
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"COMP-\d{2}",
+        location="heading",
+        scope="module_instance",
+    )
+
+
+class QualityAttribute(SpecClass):
+    """
+    A quality attribute specification (performance, security, etc.).
+
+    Example:
+        ### QA-01: Response Time
+        The system shall respond to user requests within 200ms.
+    """
+
+    heading_pattern: str = r"^QA-\d{2}:"
+    heading_level: int = 3
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"QA-\d{2}",
+        location="heading",
+        scope="module_instance",
+    )
+
+
+class SolutionArchitectureModule(SpecModule):
+    """
+    Solution Architecture Document.
+
+    Solution architecture documents describe how a system will be built
+    to satisfy requirements. They define components, their interactions,
+    technology choices, and quality attributes.
+
+    Example filename: SOL-001.md
+    Location: specs/architecture/solutions/
+
+    Required sections:
+    - Overview: High-level description of the solution
+    - System Context: How the system fits into the broader environment
+    - Components: Major architectural components
+    - Technology Stack: Technologies and frameworks to be used
+    """
+
+    name: str = "SolutionArchitecture"
+    version: str = "1.0"
+    description: str = "Solution architecture document"
+
+    file_pattern: str = r"^SOL-\d{3}\.md$"
+    location_pattern: str = r"specs/architecture/solutions/"
+
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"SOL-\d{3}",
+        location="title",
+        scope="global",
+    )
+
+    sections: list[SectionSpec] = [
+        SectionSpec(heading="Overview", heading_level=2, required=True),
+        SectionSpec(heading="System Context", heading_level=2, required=True),
+        SectionSpec(
+            heading="Components",
+            heading_level=2,
+            required=True,
+            allowed_classes=["ComponentSpec"],
+            require_classes=True,
+        ),
+        SectionSpec(heading="Interactions", heading_level=2, required=False),
+        SectionSpec(heading="Data Flow", heading_level=2, required=False),
+        SectionSpec(heading="Technology Stack", heading_level=2, required=True),
+        SectionSpec(
+            heading="Quality Attributes",
+            heading_level=2,
+            required=False,
+            allowed_classes=["QualityAttribute"],
+        ),
+        SectionSpec(heading="Security Considerations", heading_level=2, required=False),
+        SectionSpec(heading="Deployment", heading_level=2, required=False),
+    ]
+
+    references: list[Reference] = [
+        Reference(
+            name="addresses",
+            source_type="SolutionArchitecture",
+            target_type="Requirement",
+            cardinality=Cardinality(min=1, max=None),
+            link_format="id_reference",
+            must_exist=True,
+        ),
+        Reference(
+            name="relates_to",
+            source_type="SolutionArchitecture",
+            target_type="ADR",
+            cardinality=Cardinality(min=0, max=None),
+            link_format="id_reference",
+        ),
+    ]
+
+    classes: dict[str, SpecClass] = {
+        "ComponentSpec": ComponentSpec(),
+        "QualityAttribute": QualityAttribute(),
+    }
+
+
+# ============================================================================
+# Implementation Design Layer
+# ============================================================================
+
+
+class APISpec(SpecClass):
+    """
+    An API specification within an implementation design.
+
+    Example:
+        ### API-01: Create User
+        POST /api/users - Creates a new user account
+    """
+
+    heading_pattern: str = r"^API-\d{2}:"
+    heading_level: int = 3
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"API-\d{2}",
+        location="heading",
+        scope="module_instance",
+    )
+
+
+class DataModel(SpecClass):
+    """
+    A data model specification.
+
+    Example:
+        ### DM-01: User Entity
+        Represents a user in the system.
+    """
+
+    heading_pattern: str = r"^DM-\d{2}:"
+    heading_level: int = 3
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"DM-\d{2}",
+        location="heading",
+        scope="module_instance",
+    )
+
+
+class ImplementationDesignModule(SpecModule):
+    """
+    Implementation Design Document.
+
+    Implementation design documents provide detailed technical specifications
+    for how code will be written. They include API specifications, data models,
+    algorithms, and other implementation-level details.
+
+    Example filename: IMP-001.md
+    Location: specs/design/
+
+    Required sections:
+    - Overview: What is being implemented
+    - API Specifications: Interfaces and contracts
+    - Data Models: Data structures and schemas
+    """
+
+    name: str = "ImplementationDesign"
+    version: str = "1.0"
+    description: str = "Implementation design document"
+
+    file_pattern: str = r"^IMP-\d{3}\.md$"
+    location_pattern: str = r"specs/design/"
+
+    identifier: IdentifierSpec = IdentifierSpec(
+        pattern=r"IMP-\d{3}",
+        location="title",
+        scope="global",
+    )
+
+    sections: list[SectionSpec] = [
+        SectionSpec(heading="Overview", heading_level=2, required=True),
+        SectionSpec(
+            heading="API Specifications",
+            heading_level=2,
+            required=False,
+            allowed_classes=["APISpec"],
+        ),
+        SectionSpec(
+            heading="Data Models",
+            heading_level=2,
+            required=False,
+            allowed_classes=["DataModel"],
+        ),
+        SectionSpec(heading="Algorithms", heading_level=2, required=False),
+        SectionSpec(heading="Error Handling", heading_level=2, required=False),
+        SectionSpec(heading="Testing Strategy", heading_level=2, required=False),
+        SectionSpec(heading="Performance Considerations", heading_level=2, required=False),
+        SectionSpec(heading="Dependencies", heading_level=2, required=False),
+    ]
+
+    references: list[Reference] = [
+        Reference(
+            name="implements",
+            source_type="ImplementationDesign",
+            target_type="SolutionArchitecture",
+            cardinality=Cardinality(min=1, max=None),
+            link_format="id_reference",
+            must_exist=True,
+        ),
+        Reference(
+            name="addresses",
+            source_type="ImplementationDesign",
+            target_type="Requirement",
+            cardinality=Cardinality(min=0, max=None),
+            link_format="id_reference",
+        ),
+    ]
+
+    classes: dict[str, SpecClass] = {
+        "APISpec": APISpec(),
+        "DataModel": DataModel(),
+    }
+
+
+# ============================================================================
 # Architecture Layer
 # ============================================================================
 
@@ -293,9 +577,12 @@ class SpecificationModule(SpecModule):
 # ============================================================================
 
 LAYER_MODULES = {
+    "Vision": VisionModule(),
     "Job": JobModule(),
     "Requirement": RequirementModule(),
     "ADR": ArchitectureDecisionModule(),
+    "SolutionArchitecture": SolutionArchitectureModule(),
+    "ImplementationDesign": ImplementationDesignModule(),
     "Specification": SpecificationModule(),
     "Principles": PrinciplesModule(),
 }
